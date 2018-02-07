@@ -1,28 +1,22 @@
 import React, { Component } from 'react';
+import IntervalItem from './IntervalItem';
+import AddIntervalItem from './AddIntervalItem';
 
 class Interval extends Component {
 
-    render() {
+  render() {
+    const items = this.props.interval.items;
+    const listItems = items.map(item =>
+      <IntervalItem key={item.id} item={item} />
+    )
 
-      let items;
-      if (this.props.interval) {
-          items = this.props.interval.items.map(item => {
-              console.log(item);
-          });
-      }
-
-      return (
-        <div>
-          <ul>
-            {
-                this.props.interval.items.map(item => {
-                    return <li>{item.name}</li>
-                })
-            }
-          </ul>
-        </div>
-      );
-    }
+    return (
+      <div>
+        <AddIntervalItem />
+        {listItems}
+      </div>
+    );
   }
-  
-  export default Interval;
+}
+
+export default Interval;

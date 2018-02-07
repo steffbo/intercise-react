@@ -6,7 +6,11 @@ class App extends Component {
 
   constructor() {
     super();
-    this.state = {
+    this.state = {};
+  }
+
+  componentWillMount() {
+    this.setState({
       interval: {
         id: 0,
         items: [
@@ -24,7 +28,7 @@ class App extends Component {
           }
         ]
       }
-    }
+    });
   }
 
   render() {
