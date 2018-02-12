@@ -5,20 +5,20 @@ class IntervalItem extends Component {
     render() {
         const item = this.props.item;
         return (
-            <div className="panel-block">
-                <div className="level">
-                    <div className="level-left">
-                        <div className="level-item">
-                            {item.name} - {item.duration}
-                        </div>
+            <div className="panel-block" style={{ display: 'block' }}>
+                <div className="columns">
+                    <div className="column is-one-fifths">
+                        {item.name ? item.name : "Break"}
                     </div>
 
-                    <div className="level-right">
-                        <div className="level-item">
-                            <span className="icon">
-                                <i className="fas fa-minus-square" />
-                            </span>
-                        </div>
+                    <div className="column is-two-fifths">
+                        {item.duration}
+                    </div>
+
+                    <div className="column">
+                        <span className="icon" onClick={this.props.deleteItem}>
+                            <i className="fas fa-minus-square" />
+                        </span>
                     </div>
                 </div>
             </div>

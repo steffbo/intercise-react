@@ -3,22 +3,50 @@ import IntervalItem from './IntervalItem';
 import AddIntervalItem from './AddIntervalItem';
 import IntervalControls from './IntervalControls';
 
-class Interval extends Component {
+export default class Interval extends Component {
 
-  constructor(props) {
-    super(props);
-    this.state = {}
+  componentWillMount() {
+    this.setState(
+      {
+        id: 1,
+        userid: 1,
+        items: [
+          {
+            id: 0,
+            type: "Exercise",
+            name: "Burpees",
+            duration: "60"
+          },
+          {
+            id: 1,
+            type: "Break",
+            duration: "20"
+          }
+        ]
+      }
+    );
   }
 
-  handleAddItem = (e, item) => {
-    console.log(e);
-    console.log(item);
-    e.preventDefault();
+  handleAddItem = (item) => {
+    const items = this.state.items.slice();
+    item.id = items.length
+    items.push(item)
+    this.setState({
+      items: items
+    })
+    console.log(this.state)
+  }
+
+  handleDeleteItem = (e, item) => {
+    console.log(e)
+    console.log(item)
+    e.preventDefault()
   }
 
   render() {
-    const listItems = this.props.interval.items.map(item =>
-      <IntervalItem key={item.id} item={item} />
+
+    const listItems = this.state.items.map(item =>
+      <IntervalItem key={item.id} item={item} deleteItem={(event) => { this.handleDeleteItem(event, item) }} />
     )
 
     return (
@@ -30,10 +58,8 @@ class Interval extends Component {
             <IntervalControls />
           </nav>
         </div>
-        <AddIntervalItem onAddItem={this.handleAddItem} />
+        <AddIntervalItem addItem={this.handleAddItem} />
       </div >
     );
   }
 }
-
-export default Interval;

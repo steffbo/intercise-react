@@ -2,9 +2,12 @@ import React, { Component } from 'react';
 
 class AddIntervalItem extends Component {
 
-    constructor(props) {
-        super(props);
-        this.state = { type: "Break", name: "", duration: "60" }
+    componentWillMount() {
+        this.setState({
+            type: "Break",
+            name: "",
+            duration: "60"
+        })
     }
 
     handleChangeName = (e) => {
@@ -17,28 +20,23 @@ class AddIntervalItem extends Component {
         this.setState({ duration: e.target.value });
     }
 
-    // handleSubmit = (e) => {
-    //     //console.log(this.state);
-    //     console.log(this.props.items);
-        
-    //     let newArray = this.props.items.slice();
-    //     newArray.push(this.state);
-    //     console.log(newArray);
-    //     e.preventDefault();
-    // }
+    handleAddItem = (e, item) => {
+        this.props.addItem(item)
+        e.preventDefault()
+    }
 
     render() {
 
         return (
             <div className="AddIntervalItem">
-                <form onSubmit={this.props.onAddItem}>
+                <form onSubmit={(event) => { this.handleAddItem(event, this.state) }}>
 
                     <div className="box">
                         <nav className="panel">
                             <div className="panel-heading">New Item</div>
                             <div className="panel-block">
                                 <div className="control has-icons-left">
-                                    <input className="input is-small" type="text" value={this.state.name} placeholder="empty for break!" onChange={this.handleChangeName} />
+                                    <input className="input is-small" type="text" value={this.state.name} placeholder="empty for break!" onChange={(event) => { this.handleChangeName(event) }} />
                                     <span className="icon is-small is-left">
                                         <i className="fas fa-plus-square"></i>
                                     </span>
