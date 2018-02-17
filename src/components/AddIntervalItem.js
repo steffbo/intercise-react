@@ -6,7 +6,9 @@ class AddIntervalItem extends Component {
         this.setState({
             type: "Break",
             name: "",
-            duration: "60"
+            duration: 60,
+            timeleft: 60,
+            active: false
         })
     }
 
@@ -17,7 +19,10 @@ class AddIntervalItem extends Component {
     }
 
     handleChangeDuration = (e) => {
-        this.setState({ duration: e.target.value });
+        this.setState({
+            duration: parseInt(e.target.value, 10),
+            timeleft: parseInt(e.target.value, 10)
+        });
     }
 
     handleAddItem = (e, item) => {

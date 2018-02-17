@@ -4,12 +4,17 @@ import AddIntervalItem from './AddIntervalItem'
 import IntervalControls from './IntervalControls'
 import uuid from 'uuid'
 import { arrayMove } from '../utility'
+import _ from 'lodash'
 
 export default class Interval extends Component {
 
   constructor(props) {
     super(props)
-    this.state = {
+    this.state = this.getDefault()
+  }
+
+  getDefault() {
+    return {
       id: 1,
       userid: 1,
       runtime: 0,
@@ -19,32 +24,35 @@ export default class Interval extends Component {
           active: false,
           type: "Exercise",
           name: "Burpees",
-          duration: 60,
-          timeleft: 60
+          duration: 5,
+          timeleft: 5
         },
         {
           id: uuid(),
           active: false,
           type: "Break",
-          duration: 20,
-          timeleft: 20
+          duration: 10,
+          timeleft: 10
         }
       ]
     }
   }
 
   componentDidMount() {
-    console.log(this.state)
+    // console.log(this.state)
   }
 
   componentDidUpdate() {
-    console.log(this.state)
+    // console.log("Component did update!")
+    // console.log(this.state)
   }
 
   handleAddItem = (item) => {
     const items = this.state.items.slice();
-    const newItem = Object.assign({}, item)
+    // const newItem = Object.assign({}, item)
+    const newItem = { ...item }
     newItem.id = uuid()
+    console.log(newItem)
     items.push(newItem)
     this.setState({
       items: items
@@ -87,29 +95,41 @@ export default class Interval extends Component {
     console.log("Runtime: " + this.state.runtime)
 
     const runtime = this.state.runtime
-    // const items = this.state.items
-    // let durationSum = 0
-    // let activeItem = runtime === 0 ? items[0] : this.getActiveItem(items, runtime)
-    // this.setState({
-    //  items.
-    // })
-    this.setState({ runtime: runtime + 1 })
+    const items = this.state.items
+    const newItems = this.updateItems(items, runtime)
+
+    // Update runtime
+    this.setState({
+      runtime: runtime + 1,
+      items: newItems
+    })
   }
 
-  // getActiveItem(items, runtime) {
-  //   for (let i = 0; i < items.length; i++) {
-  //     const item = items[i]
+  updateItems(items, runtime) {
+    let durationSum = 0
+    const newItems = _.cloneDeep(items)
+    // const newItems = {...items}
+    let finished = true
 
-  //     if (runtime == 0) {
+    for (let i = 0; i < newItems.length; i++) {
+      let item = newItems[i]
 
-  //     } else if (durationSum && runtime) {
-  //       activeItem = item
-  //     }
-  //     durationSum += item.duration
+      if (durationSum <= runtime && runtime < durationSum + item.duration) {
+        item.active = true
+        item.timeleft = item.duration + durationSum - runtime - 1
+        finished = false
+      } else {
+        item.active = false
+      }
 
-  //     console.log(item)
-  //   }
-  // }
+      durationSum += item.duration
+    }
+    if (finished) {
+      console.log("Finished")
+      this.handlePause()
+    }
+    return newItems
+  }
 
   handlePause() {
     console.log("Pause")
@@ -119,7 +139,15 @@ export default class Interval extends Component {
   handleReset() {
     console.log("Reset")
     clearInterval(this.state.timerId)
-    this.setState({ runtime: 0 })
+    const newItems = _.cloneDeep(this.state.items)
+    newItems.forEach(element => {
+      element.timeleft = element.duration
+      element.active = false
+    });
+    this.setState({
+      runtime: 0,
+      items: newItems
+    })
   }
 
   render() {
