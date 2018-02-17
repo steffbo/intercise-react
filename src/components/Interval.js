@@ -12,19 +12,22 @@ export default class Interval extends Component {
     this.state = {
       id: 1,
       userid: 1,
+      runtime: 0,
       items: [
         {
           id: uuid(),
-          active: true,
+          active: false,
           type: "Exercise",
           name: "Burpees",
-          duration: "60"
+          duration: 60,
+          timeleft: 60
         },
         {
           id: uuid(),
           active: false,
           type: "Break",
-          duration: "20"
+          duration: 20,
+          timeleft: 20
         }
       ]
     }
@@ -73,6 +76,52 @@ export default class Interval extends Component {
     this.setState({ items: newItems })
   }
 
+  handleStart() {
+    console.log("Start")
+    this.setState({
+      timerId: setInterval(this.tick.bind(this), 1000)
+    })
+  }
+
+  tick() {
+    console.log("Runtime: " + this.state.runtime)
+
+    const runtime = this.state.runtime
+    // const items = this.state.items
+    // let durationSum = 0
+    // let activeItem = runtime === 0 ? items[0] : this.getActiveItem(items, runtime)
+    // this.setState({
+    //  items.
+    // })
+    this.setState({ runtime: runtime + 1 })
+  }
+
+  // getActiveItem(items, runtime) {
+  //   for (let i = 0; i < items.length; i++) {
+  //     const item = items[i]
+
+  //     if (runtime == 0) {
+
+  //     } else if (durationSum && runtime) {
+  //       activeItem = item
+  //     }
+  //     durationSum += item.duration
+
+  //     console.log(item)
+  //   }
+  // }
+
+  handlePause() {
+    console.log("Pause")
+    clearInterval(this.state.timerId)
+  }
+
+  handleReset() {
+    console.log("Reset")
+    clearInterval(this.state.timerId)
+    this.setState({ runtime: 0 })
+  }
+
   render() {
 
     const listItems = this.state.items.map(item =>
@@ -91,7 +140,12 @@ export default class Interval extends Component {
           <nav className="panel">
             <div className="panel-heading">Interval</div>
             {listItems}
-            <IntervalControls />
+            <IntervalControls
+              onStart={() => this.handleStart()}
+              onPause={() => this.handlePause()}
+              onReset={() => this.handleReset()}
+              runtime={this.state.runtime}
+            />
           </nav>
         </div>
         <AddIntervalItem addItem={(item) => { this.handleAddItem(item) }} />

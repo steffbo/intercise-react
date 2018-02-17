@@ -22,7 +22,7 @@ class IntervalItem extends Component {
                     </div>
 
                     <div className="column is-two-fifths">
-                        {item.duration}
+                        {item.timeleft}
                     </div>
 
                     <div className="column">
