@@ -1,5 +1,12 @@
-.IntervalItem {
-    background: #000;
-    color: #fff;
+.is-done {
+    background: #00d1b2;
+}
+
+.is-active {
+    background: #209cee;
+}
+
+.is-upcoming {
+    background: #ffd83d;
 }
 

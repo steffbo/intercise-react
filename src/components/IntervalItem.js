@@ -4,8 +4,9 @@ class IntervalItem extends Component {
 
     render() {
         const item = this.props.item;
+        const status = (item.active ? 'is-active' : item.timeleft <= 0 ? 'is-done' : 'is-upcoming')
         return (
-            <div className="panel-block" style={{ display: 'block' }}>
+            <div className={"panel-block " + status} style={{ display: 'block' }}>
                 <div className="columns">
 
                     <div className="column">
@@ -22,7 +23,7 @@ class IntervalItem extends Component {
                     </div>
 
                     <div className="column is-two-fifths">
-                        {item.timeleft.toString()} - {item.active.toString()}
+                        Time left: {item.timeleft.toString()}
                     </div>
 
                     <div className="column">

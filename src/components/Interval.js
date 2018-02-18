@@ -5,19 +5,21 @@ import IntervalControls from './IntervalControls'
 import uuid from 'uuid'
 import { arrayMove } from '../utility'
 import _ from 'lodash'
+import beep from '../beep.mp3'
 
 export default class Interval extends Component {
 
   constructor(props) {
     super(props)
     this.state = this.getDefault()
+    
   }
 
   getDefault() {
     return {
       id: 1,
       userid: 1,
-      runtime: 0,
+      runtime: -3,
       items: [
         {
           id: uuid(),
@@ -98,6 +100,10 @@ export default class Interval extends Component {
     const items = this.state.items
     const newItems = this.updateItems(items, runtime)
 
+    if (runtime < 0) {
+      new Audio(beep).play()
+    }
+
     // Update runtime
     this.setState({
       runtime: runtime + 1,
@@ -117,10 +123,17 @@ export default class Interval extends Component {
       if (durationSum <= runtime && runtime < durationSum + item.duration) {
         item.active = true
         item.timeleft = item.duration + durationSum - runtime - 1
+
+        if (item.timeleft < 3) {
+          new Audio(beep).play()          
+        }
+
         finished = false
       } else {
         item.active = false
       }
+
+       finished = finished && runtime > 0
 
       durationSum += item.duration
     }
@@ -145,7 +158,7 @@ export default class Interval extends Component {
       element.active = false
     });
     this.setState({
-      runtime: 0,
+      runtime: -3,
       items: newItems
     })
   }
