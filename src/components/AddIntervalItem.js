@@ -13,7 +13,7 @@ class AddIntervalItem extends Component {
     }
 
     handleChangeName = (e) => {
-        this.setState(e.target.value ?
+        this.setState(e.target.value === "" ?
             { type: "Exercise", name: e.target.value } :
             { type: "Break", name: "" });
     }
