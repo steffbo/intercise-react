@@ -27,6 +27,7 @@ class AddIntervalItem extends Component {
 
     handleAddItem = (e, item) => {
         this.props.addItem(item)
+        this.setState({name: ""})
         e.preventDefault()
     }
 
@@ -51,12 +52,10 @@ class AddIntervalItem extends Component {
                                 <div className="control has-icons-left">
                                     <div className="select is-small">
                                         <select value={this.state.duration} onChange={this.handleChangeDuration}>
-                                            <option>10</option>
-                                            <option>20</option>
-                                            <option>30</option>
-                                            <option>40</option>
+                                            <option>15</option>
                                             <option>50</option>
                                             <option>60</option>
+                                            <option>100</option>
                                         </select>
                                     </div>
                                     <div className="icon is-small is-left">
