@@ -11,6 +11,8 @@ class IntervalControls extends Component {
                 &nbsp;
                 <button className="button is-danger" onClick={this.props.onReset}>Reset</button>
                 &nbsp;
+                <button className="button is-info" onClick={this.props.addBreaks}>Add Breaks</button>
+                &nbsp;
                 Total runtime: {this.props.runtime}
             </div>
         );

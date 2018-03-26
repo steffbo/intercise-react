@@ -11,8 +11,9 @@ export default class Interval extends Component {
 
   constructor(props) {
     super(props)
-    this.state = this.getDefault()
-    
+
+    const cache = localStorage.getItem('interval')
+    this.state = (cache) ? JSON.parse(cache) : this.getDefault()
   }
 
   getDefault() {
@@ -27,14 +28,16 @@ export default class Interval extends Component {
           type: "Exercise",
           name: "Burpees",
           duration: 5,
-          timeleft: 5
+          timeleft: 5,
+          isEditable: false
         },
         {
           id: uuid(),
           active: false,
           type: "Break",
           duration: 10,
-          timeleft: 10
+          timeleft: 10,
+          isEditable: false
         }
       ]
     }
@@ -47,14 +50,14 @@ export default class Interval extends Component {
   componentDidUpdate() {
     // console.log("Component did update!")
     // console.log(this.state)
+
+    localStorage.setItem('interval', JSON.stringify(this.state))
   }
 
   handleAddItem = (item) => {
     const items = this.state.items.slice();
-    // const newItem = Object.assign({}, item)
     const newItem = { ...item }
     newItem.id = uuid()
-    console.log(newItem)
     items.push(newItem)
     this.setState({
       items: items
@@ -86,6 +89,25 @@ export default class Interval extends Component {
     this.setState({ items: newItems })
   }
 
+  handleEditItem = (item) => {
+    let newItems = _.cloneDeep(this.state.items)
+    let newItem = newItems.find(e => e.id === item.id)
+    
+    newItem.isEditable = !newItem.isEditable
+    console.log(newItem)
+    this.setState({items: newItems})
+  }
+
+  handleChangeItem = (item) => {
+    let newItems = _.cloneDeep(this.state.items)
+    let newItem = newItems.find(e => e.id === item.id)
+    newItem.name = item.name
+    newItem.timeleft = item.timeleft
+    newItem.type = item.type
+    newItem.isEditable = item.isEditable
+    this.setState({items: newItems})
+  }
+
   handleStart() {
     console.log("Start")
     this.setState({
@@ -114,7 +136,6 @@ export default class Interval extends Component {
   updateItems(items, runtime) {
     let durationSum = 0
     const newItems = _.cloneDeep(items)
-    // const newItems = {...items}
     let finished = true
 
     for (let i = 0; i < newItems.length; i++) {
@@ -125,7 +146,7 @@ export default class Interval extends Component {
         item.timeleft = item.duration + durationSum - runtime - 1
 
         if (item.timeleft < 3) {
-          new Audio(beep).play()          
+          new Audio(beep).play()
         }
 
         finished = false
@@ -133,7 +154,7 @@ export default class Interval extends Component {
         item.active = false
       }
 
-       finished = finished && runtime > 0
+      finished = finished && runtime > 0
 
       durationSum += item.duration
     }
@@ -163,6 +184,28 @@ export default class Interval extends Component {
     })
   }
 
+  handleAddBreaks() {
+    console.log("add breaks")
+
+    const newItems = _.cloneDeep(this.state.items)
+
+    for (let i = newItems.length; i > 0; i--) {
+      const newBreak = {
+        id: uuid(),
+        type: "Break",
+        name: "",
+        duration: 20,
+        timeleft: 20,
+        active: false
+      }
+      newItems.splice(i, 0, newBreak)
+    }
+
+    this.setState({
+      items: newItems
+    })
+  }
+
   render() {
 
     const listItems = this.state.items.map(item =>
@@ -172,6 +215,8 @@ export default class Interval extends Component {
         deleteItem={(event) => { this.handleDeleteItem(event, item) }}
         upItem={(event) => { this.handleUpItem(event, item) }}
         downItem={(event) => { this.handleDownItem(event, item) }}
+        editItem={(event) => { this.handleEditItem(item) }}
+        changeItem={(item) => { this.handleChangeItem(item) }}
       />
     )
 
@@ -185,6 +230,7 @@ export default class Interval extends Component {
               onStart={() => this.handleStart()}
               onPause={() => this.handlePause()}
               onReset={() => this.handleReset()}
+              addBreaks={() => this.handleAddBreaks()}
               runtime={this.state.runtime}
             />
           </nav>

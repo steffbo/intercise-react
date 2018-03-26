@@ -8,7 +8,8 @@ class AddIntervalItem extends Component {
             name: "",
             duration: 60,
             timeleft: 60,
-            active: false
+            active: false,
+            isEditable: false
         })
     }
 
@@ -52,10 +53,19 @@ class AddIntervalItem extends Component {
                                 <div className="control has-icons-left">
                                     <div className="select is-small">
                                         <select value={this.state.duration} onChange={this.handleChangeDuration}>
+                                            <option>10</option>
                                             <option>15</option>
+                                            <option>20</option>
+                                            <option>25</option>
+                                            <option>30</option>
+                                            <option>40</option>
+                                            <option>45</option>
                                             <option>50</option>
                                             <option>60</option>
+                                            <option>75</option>
+                                            <option>90</option>
                                             <option>100</option>
+                                            <option>120</option>
                                         </select>
                                     </div>
                                     <div className="icon is-small is-left">
