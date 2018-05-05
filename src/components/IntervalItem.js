@@ -3,6 +3,12 @@ import _ from 'lodash'
 
 const ENTER_KEY = 13;
 
+/**
+ * is current
+ * is next
+ * 
+ */
+
 class IntervalItem extends Component {
 
     constructor(props) {

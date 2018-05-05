@@ -14,6 +14,7 @@ export default class Interval extends Component {
 
     const cache = localStorage.getItem('interval')
     this.state = (cache) ? JSON.parse(cache) : this.getDefault()
+    this.saveNextAction = true
   }
 
   getDefault() {
@@ -47,10 +48,22 @@ export default class Interval extends Component {
     // console.log(this.state)
   }
 
-  componentDidUpdate() {
+  componentDidUpdate(prevProps, prevState) {
     // console.log("Component did update!")
     // console.log(this.state)
 
+    // const prev = JSON.stringify(prevState)
+    // const p = localStorage.getItem('prevStates')    
+    // console.log(p)
+    // let prevStates
+    // if (p && p !== null && p !== undefined) {
+    //   prevStates = JSON.parse(p)
+    //   prevStates.push(prev)
+    // } else {
+    //   prevStates = [prev]
+    // }
+
+    // localStorage.setItem('prevStates', JSON.stringify(prevStates))
     localStorage.setItem('interval', JSON.stringify(this.state))
   }
 
@@ -92,10 +105,10 @@ export default class Interval extends Component {
   handleEditItem = (item) => {
     let newItems = _.cloneDeep(this.state.items)
     let newItem = newItems.find(e => e.id === item.id)
-    
+
     newItem.isEditable = !newItem.isEditable
     console.log(newItem)
-    this.setState({items: newItems})
+    this.setState({ items: newItems })
   }
 
   handleChangeItem = (item) => {
@@ -105,7 +118,7 @@ export default class Interval extends Component {
     newItem.timeleft = item.timeleft
     newItem.type = item.type
     newItem.isEditable = item.isEditable
-    this.setState({items: newItems})
+    this.setState({ items: newItems })
   }
 
   handleStart() {
@@ -190,20 +203,53 @@ export default class Interval extends Component {
     const newItems = _.cloneDeep(this.state.items)
 
     for (let i = newItems.length; i > 0; i--) {
-      const newBreak = {
-        id: uuid(),
-        type: "Break",
-        name: "",
-        duration: 20,
-        timeleft: 20,
-        active: false
+
+      console.log(newItems)
+
+      if (newItems[i-1].type === "Exercise") {
+
+        const newBreak = {
+          id: uuid(),
+          type: "Break",
+          name: "",
+          duration: 20,
+          timeleft: 20,
+          active: false
+        }
+        newItems.splice(i, 0, newBreak)
       }
-      newItems.splice(i, 0, newBreak)
     }
 
     this.setState({
       items: newItems
     })
+  }
+
+  handleUndo() {
+    // let prevStates = JSON.parse(localStorage.getItem('prevStates'))
+    
+    // if (prevStates) {
+    //   let prevState = prevStates.pop()
+    //   console.log(prevState)
+    //   console.log(this.state)
+    //   this.setState(prevState)
+    //   localStorage.setItem('prevStates', prevStates)
+    //   console.log("undo")
+    // }
+  }
+
+  getTotalDuration() {
+    const total = this.state.items
+      .map(item => item.duration)
+      .reduce((accumulator, current) => accumulator + parseInt(current, 10))
+      console.log(total)
+
+      const min = Math.floor(total / 60)
+      console.log(min)
+      const seconds = total - min*60
+      console.log(seconds)
+
+      return min + ":" + seconds
   }
 
   render() {
@@ -231,8 +277,10 @@ export default class Interval extends Component {
               onPause={() => this.handlePause()}
               onReset={() => this.handleReset()}
               addBreaks={() => this.handleAddBreaks()}
+              undo={() => this.handleUndo()}
               runtime={this.state.runtime}
             />
+            Gesamtdauer: {this.getTotalDuration()} Min
           </nav>
         </div>
         <AddIntervalItem addItem={(item) => { this.handleAddItem(item) }} />
