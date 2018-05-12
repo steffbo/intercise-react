@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
 import IntervalItem from './IntervalItem'
+import Item from './Item'
 import AddIntervalItem from './AddIntervalItem'
 import IntervalControls from './IntervalControls'
 import uuid from 'uuid'
@@ -20,26 +21,10 @@ export default class Interval extends Component {
   getDefault() {
     return {
       id: 1,
-      userid: 1,
       runtime: -3,
-      items: [
-        {
-          id: uuid(),
-          active: false,
-          type: "Exercise",
-          name: "Burpees",
-          duration: 5,
-          timeleft: 5,
-          isEditable: false
-        },
-        {
-          id: uuid(),
-          active: false,
-          type: "Break",
-          duration: 10,
-          timeleft: 10,
-          isEditable: false
-        }
+      items: [        
+        new Item("Burpees", "Exercise", 40),
+        new Item("", "Break", 10)
       ]
     }
   }

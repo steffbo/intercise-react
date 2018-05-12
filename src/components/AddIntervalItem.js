@@ -1,34 +1,36 @@
-import React, { Component } from 'react';
+import React, { Component } from 'react'
+import Item from './Item'
 
 class AddIntervalItem extends Component {
 
     componentWillMount() {
         this.setState({
-            type: "Break",
-            name: "",
-            duration: 60,
-            timeleft: 60,
-            active: false,
-            isEditable: false
+            item: new Item("", "Break", 10)            
         })
     }
 
     handleChangeName = (e) => {
-        this.setState(e.target.value ?
-            { type: "Exercise", name: e.target.value } :
-            { type: "Break", name: "" });
+        const item = this.state.item
+        if (e.target.value) {
+            item.type = "Exercise"
+            item.name = e.target.value
+        } else {
+            item.type = "Break"
+            item.name = ""
+        }
+        this.setState({ item: item })
     }
 
     handleChangeDuration = (e) => {
-        this.setState({
-            duration: parseInt(e.target.value, 10),
-            timeleft: parseInt(e.target.value, 10)
-        });
+        const item = this.state.item
+        item.duration = parseInt(e.target.value, 10)
+        item.timeleft = parseInt(e.target.value, 10)
+        this.setState({ item: item })
     }
 
     handleAddItem = (e, item) => {
         this.props.addItem(item)
-        this.setState({name: ""})
+        this.setState({ item: new Item("", "Break", 10) } )
         e.preventDefault()
     }
 
@@ -36,14 +38,15 @@ class AddIntervalItem extends Component {
 
         return (
             <div className="AddIntervalItem">
-                <form onSubmit={(event) => { this.handleAddItem(event, this.state) }}>
+                <form onSubmit={(event) => { this.handleAddItem(event, this.state.item) }}>
 
                     <div className="box">
                         <nav className="panel">
                             <div className="panel-heading">New Item</div>
                             <div className="panel-block">
                                 <div className="control has-icons-left">
-                                    <input className="input is-small" type="text" value={this.state.name} placeholder="empty for break!" onChange={(event) => { this.handleChangeName(event) }} />
+                                    <input className="input is-small" type="text" value={this.state.item.name} 
+                                           placeholder="empty for break!" onChange={(event) => { this.handleChangeName(event) }} />
                                     <span className="icon is-small is-left">
                                         <i className="fas fa-plus-square"></i>
                                     </span>
@@ -52,7 +55,7 @@ class AddIntervalItem extends Component {
                             <div className="panel-block">
                                 <div className="control has-icons-left">
                                     <div className="select is-small">
-                                        <select value={this.state.duration} onChange={this.handleChangeDuration}>
+                                        <select value={this.state.item.duration} onChange={this.handleChangeDuration}>
                                             <option>10</option>
                                             <option>15</option>
                                             <option>20</option>

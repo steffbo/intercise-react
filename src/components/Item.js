@@ -2,7 +2,7 @@ import uuid from 'uuid'
 
 export default class Item {
 
-    constructor(name, type, category, duration) {
+    constructor(name, type, duration, category) {
         this.id = uuid()
         this.name = name
         this.type = type
