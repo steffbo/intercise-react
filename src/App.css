@@ -1,15 +1,25 @@
+.wrapper {
+    width: 80%;
+    margin: auto;
+    padding-top: 20px;
+}
+
+.AddIntervalItem {
+    padding-top: 30px;
+}
+
 .is-done {
     background: #00d1b2;
-    
 }
 
 .is-active {
-    background: #209cee;
+    background-color: #209cee;
     font-size: 24px;
+    color: aliceblue !important;
 }
 
 .break {
-    background: #ffe785;
+    background-color: #ffe785;
 }
 
 .is-next {
@@ -17,6 +27,6 @@
 }
 
 .is-upcoming {
-    background: #ffd83d;
+    background-color: #ffd83d;
 }
 
