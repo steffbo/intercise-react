@@ -70,9 +70,14 @@ class IntervalItem extends Component {
     }
 
     render() {
+        if (this.state.timeleft === 0) {
+            return null
+        }
+
         const item = this.props.item
         const status = (item.type === "Break") ? 'break' : (item.active ? 'is-active' : item.timeleft <= 0 ? 'is-done' : 'is-upcoming')        
         const editIcon = item.isEditable ? "done" : "edit"
+
         return (
             <tr className={status}>
                 <td>

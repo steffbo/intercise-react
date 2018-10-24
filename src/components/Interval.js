@@ -39,6 +39,9 @@ export default class Interval extends Component {
   }
 
   handleAddItem = (item) => {
+
+    console.log(item)
+
     const items = this.state.items.slice();
     const newItem = { ...item }
     newItem.id = uuid()

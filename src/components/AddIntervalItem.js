@@ -73,7 +73,7 @@ class AddIntervalItem extends Component {
                                 </select>
                             </div>
                             
-                            <button type="button" className="btn btn-info is-outlined is-fullwidth">
+                            <button type="submit" className="btn btn-info is-outlined is-fullwidth">
                                 Add {this.state.item.type}
                             </button>                            
                         </div>
