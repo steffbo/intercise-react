@@ -1,11 +1,11 @@
 import React, { Component } from 'react'
-import Item from './Item'
+import Item from '../model/Item'
 
 class AddIntervalItem extends Component {
 
     componentWillMount() {
         this.setState({
-            item: new Item("", "Break", 10)            
+            item: new Item("", "Break", 20)            
         })
     }
 
@@ -30,7 +30,7 @@ class AddIntervalItem extends Component {
 
     handleAddItem = (e, item) => {
         this.props.addItem(item)
-        this.setState({ item: new Item("", "Break", 10) } )
+        this.setState({ item: new Item("", "Break", item.duration) } )
         e.preventDefault()
     }
 
@@ -38,53 +38,46 @@ class AddIntervalItem extends Component {
 
         return (
             <div className="AddIntervalItem">
+            <h2>Add Item</h2>
                 <form onSubmit={(event) => { this.handleAddItem(event, this.state.item) }}>
 
-                    <div className="box">
-                        <nav className="panel">
-                            <div className="panel-heading">New Item</div>
-                            <div className="panel-block">
-                                <div className="control has-icons-left">
-                                    <input className="input is-small" type="text" value={this.state.item.name} 
-                                           placeholder="empty for break!" onChange={(event) => { this.handleChangeName(event) }} />
-                                    <span className="icon is-small is-left">
-                                        <i className="fas fa-plus-square"></i>
-                                    </span>
-                                </div>
-                            </div>
-                            <div className="panel-block">
-                                <div className="control has-icons-left">
-                                    <div className="select is-small">
-                                        <select value={this.state.item.duration} onChange={this.handleChangeDuration}>
-                                            <option>10</option>
-                                            <option>15</option>
-                                            <option>20</option>
-                                            <option>25</option>
-                                            <option>30</option>
-                                            <option>40</option>
-                                            <option>45</option>
-                                            <option>50</option>
-                                            <option>60</option>
-                                            <option>75</option>
-                                            <option>90</option>
-                                            <option>100</option>
-                                            <option>120</option>
-                                        </select>
-                                    </div>
-                                    <div className="icon is-small is-left">
-                                        <i className="fas fa-clock"></i>
-                                    </div>
-                                    &nbsp;<span className="tag is-info">seconds</span>
-                                </div>
-                            </div>
-                            <div className="panel-block">
-                                <button className="button is-link is-outlined is-fullwidth">
-                                    Add {this.state.type}
-                                </button>
-                            </div>
-                        </nav>
-                    </div>
+                    <div className="card">
+                        <div className="card-body">
 
+                            <div className="input-group mb-3">
+                                <div className="input-group-prepend">
+                                    <label className="input-group-text" htmlFor="exercise">New Item &nbsp; &nbsp;</label>
+                                </div>
+                                <input id="exercise" className="form-control" type="text" value={this.state.item.name} 
+                                    placeholder="empty for break!" onChange={(event) => { this.handleChangeName(event) }} />
+                            </div>
+
+                            <div className="input-group mb-3">
+                                <div className="input-group-prepend">
+                                    <label className="input-group-text" htmlFor="duration">Duration (s)</label>
+                                </div>
+                                <select className="custom-select" id="duration" value={this.state.item.duration} onChange={this.handleChangeDuration}>
+                                    <option>10</option>
+                                    <option>15</option>
+                                    <option>20</option>
+                                    <option>25</option>
+                                    <option>30</option>
+                                    <option>40</option>
+                                    <option>45</option>
+                                    <option>50</option>
+                                    <option>60</option>
+                                    <option>75</option>
+                                    <option>90</option>
+                                    <option>100</option>
+                                    <option>120</option>
+                                </select>
+                            </div>
+                            
+                            <button type="button" className="btn btn-info is-outlined is-fullwidth">
+                                Add {this.state.item.type}
+                            </button>                            
+                        </div>
+                    </div>
                 </form>
             </div>
         );
