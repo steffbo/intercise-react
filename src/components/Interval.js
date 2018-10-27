@@ -3,9 +3,7 @@ import IntervalItem from './IntervalItem'
 import Item from '../model/Item'
 import AddIntervalItem from './AddIntervalItem'
 import IntervalControls from './IntervalControls'
-import uuid from 'uuid'
 import { arrayMove } from '../utility'
-import _ from 'lodash'
 import beep from '../beep.mp3'
 
 export default class Interval extends Component {
@@ -15,23 +13,18 @@ export default class Interval extends Component {
 
     const cache = localStorage.getItem('interval')
     this.state = (cache) ? JSON.parse(cache) : this.getDefault()
-    this.saveNextAction = true
   }
 
   getDefault() {
     return {
-      id: 1,
       runtime: -3,
       running: false,
+      breakLength: 20,
       items: [        
-        new Item("Burpees", "Exercise", 40),
-        new Item("", "Break", 10)
+        new Item("Burpees", 40),
+        new Item("", 10)
       ]
     }
-  }
-
-  componentDidMount() {
-    // console.log(this.state)
   }
 
   componentDidUpdate(prevProps, prevState) {
@@ -39,26 +32,17 @@ export default class Interval extends Component {
   }
 
   handleAddItem = (item) => {
-
-    console.log(item)
-
-    const items = this.state.items.slice();
-    const newItem = { ...item }
-    newItem.id = uuid()
-    items.push(newItem)
+    const newItems = [ ...this.state.items, item ]
     this.setState({
-      items: items
+      items: newItems
     })
   }
 
-  handleDeleteItem = (e, item) => {
-    console.log(this.state)
-    const items = this.state.items.slice();
-    const filtered = items.filter(e => e !== item)
+  handleDeleteItem = (event, item) => {
+    const newItems = [ this.state.items.filter(entry => entry !== item)]
     this.setState({
-      items: filtered
+      items: newItems
     })
-    e.preventDefault()
   }
 
   handleUpItem = (e, item) => {
@@ -76,70 +60,57 @@ export default class Interval extends Component {
     this.setState({ items: newItems })
   }
 
-  // makes an item editable by showing input fields
-  handleEditItem = (e, item) => {
-    let newItems = _.cloneDeep(this.state.items)
-    let newItem = newItems.find(e => e.id === item.id)
-    newItem.isEditable = !newItem.isEditable
-    this.setState({ items: newItems })
-    console.log("edit item")
-    console.table(newItems)
-  }
-
   // after an item has been edited, save the change
   handleChangeItem = (changedItem) => {
+    const index = this.state.items.findIndex(entry => entry.id === changedItem.id)
 
-    console.log("change item")
-    console.table(changedItem)
+    const newItem = { 
+      ...this.state.items.find(e => e.id === changedItem.id),
+      name: changedItem.name,
+      duration: changedItem.duration,
+      timeleft: changedItem.timeleft
+    }
 
-    let items = _.cloneDeep(this.state.items)
-    let item = items.find(e => e.id === changedItem.id)
-    //item = _.clone(changedItem)
-    item.name = changedItem.name
-    item.duration = changedItem.duration
-    item.timeleft = changedItem.timeleft
-    item.type = changedItem.type
-    item.isEditable = changedItem.isEditable
-    this.setState({ items: items })
+    const beforeItems = this.state.items.slice(0, index)
+    const afterItems = this.state.items.slice(index+1, this.state.items.length+1)
+    const newItems = [...beforeItems, newItem, ...afterItems]    
+    this.setState({ items: newItems })
   }
 
-  handleStart() {
-    console.log("Start")
+  handleStart = () => {
     this.setState({
       running: true,
-      timerId: setInterval(this.tick.bind(this), 1000)
+      timerId: setInterval(this.tick.bind(this), 100)
     })
   }
 
   tick() {
-    //console.log("Runtime: " + this.state.runtime)
-
     const runtime = this.state.runtime
     const items = this.state.items
-    const newItems = this.updateItems(items, runtime)
 
     // countdown before start
     if (runtime < 0) {
       new Audio(beep).play()
     }
 
-    const total = this.state.items
+    const totalDuration = items
       .map(item => item.duration)
       .reduce((accumulator, current) => accumulator + parseInt(current, 10))
-    const progress = this.state.runtime / total * 100
+    const progress = runtime / totalDuration * 100
 
     // Update runtime
     this.setState({
       runtime: runtime + 1,
-      items: newItems,
+      items: this.updateItems(),
       progress: progress
     })
   }
 
   // update for each timer tick
-  updateItems(items, runtime) {
+  updateItems() {
     let durationSum = 0
-    const newItems = _.cloneDeep(items)
+    const newItems = [...this.state.items]
+    const runtime = this.state.runtime
     let finished = true
 
     // loop over all items
@@ -165,24 +136,21 @@ export default class Interval extends Component {
       durationSum += item.duration
     }
     if (finished) {
-      console.log("Finished")
       this.handlePause()
     }
     return newItems
   }
 
-  handlePause() {
-    console.log("Pause")
+  handlePause = () => {    
     this.setState({
       running: false
     })
     clearInterval(this.state.timerId)
   }
 
-  handleReset() {
-    console.log("Reset")
+  handleReset = () => {
     clearInterval(this.state.timerId)
-    const newItems = _.cloneDeep(this.state.items)
+    const newItems = [...this.state.items]
     newItems.forEach(element => {
       element.timeleft = element.duration
       element.active = false
@@ -195,35 +163,28 @@ export default class Interval extends Component {
     })
   }
 
-  handleAddBreaks() {
-    console.log("add breaks")
+  setBreakLength = (event) => {
+    this.setState({breakLength: parseInt(event.target.value, 10)})
+  }
 
-    const newItems = _.cloneDeep(this.state.items)
-
-    for (let i = newItems.length; i > 0; i--) {
-
-      console.log(newItems)
-
-      if (newItems[i-1].type === "Exercise") {
-
-        const newBreak = {
-          id: uuid(),
-          type: "Break",
-          name: "",
-          duration: 20,
-          timeleft: 20,
-          active: false
-        }
+  // adds a break after each exercise
+  handleAddBreaks = () => {    
+    const newItems = [ ...this.state.items ]
+    for (let i = newItems.length-1; i > 0; i--) {
+      if (newItems[i-1].name !== "") {
+        const newBreak = new Item("", this.state.breakLength)
         newItems.splice(i, 0, newBreak)
       }
     }
-
-    this.setState({
-      items: newItems
-    })
+    this.setState({ items: newItems })
   }
 
-  getTotalDuration() {
+  handleRemoveBreaks = () => {
+    const onlyExercises = this.state.items.filter(item => item.name !== "")    
+    this.setState({ items: onlyExercises })
+  }
+
+  getTotalDurationString() {
     const total = this.state.items
       .map(item => item.duration)
       .reduce((accumulator, current) => accumulator + parseInt(current, 10))
@@ -237,7 +198,6 @@ export default class Interval extends Component {
   }
 
   render() {
-
     const listItems = this.state.items.map(item =>
       <IntervalItem
         key={item.id}
@@ -245,8 +205,8 @@ export default class Interval extends Component {
         deleteItem={(event) => { this.handleDeleteItem(event, item) }}
         upItem={(event) => { this.handleUpItem(event, item) }}
         downItem={(event) => { this.handleDownItem(event, item) }}
-        editItem={(event) => { this.handleEditItem(event, item) }}
         changeItem={(newItem) => { this.handleChangeItem(newItem) }}
+        running={this.state.running}
       />
     )
 
@@ -257,10 +217,10 @@ export default class Interval extends Component {
         <table className="table">
           <thead>
               <tr>
-              <th scope="col">Order</th>
-              <th scope="col">Exercise</th>
-              <th scope="col">Duration</th>
-              <th scope="col">Options</th>
+              <th className="col-order" scope="col">Order</th>
+              <th className="col-exercise" scope="col">Exercise</th>
+              <th className="col-duration" scope="col">Duration</th>
+              <th className="col-options" scope="col">Options</th>
               </tr>
           </thead>
           <tbody>            
@@ -270,23 +230,28 @@ export default class Interval extends Component {
 
         <IntervalControls
           running={this.state.running}
-          onStart={() => this.handleStart()}
-          onPause={() => this.handlePause()}
-          onReset={() => this.handleReset()}
-          addBreaks={() => this.handleAddBreaks()}
-          undo={() => this.handleUndo()}
+          onStart={this.handleStart}
+          onPause={this.handlePause}
+          onReset={this.handleReset}
+          addBreaks={this.handleAddBreaks}
+          removeBreaks={this.handleRemoveBreaks}          
           runtime={this.state.runtime}
+          breakLength={this.state.breakLength}
+          setBreakLength={this.setBreakLength}
         />
 
         <br/>
-        Gesamtdauer: {this.getTotalDuration()} Min
+        Total duration: {this.getTotalDurationString()} Min
         <div className="progress">
           
           <div className="progress-bar" role="progressbar" style={{ width: this.state.progress + '%' }} 
             aria-valuenow={this.state.progress} aria-valuemin="0" aria-valuemax="100"></div>
           </div>
 
-        <AddIntervalItem addItem={(item) => { this.handleAddItem(item) }} />
+        <AddIntervalItem 
+          running={this.state.running} 
+          addItem={(item) => { this.handleAddItem(item) }} 
+        />
       </div >
     );
   }

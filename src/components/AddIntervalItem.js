@@ -1,45 +1,45 @@
 import React, { Component } from 'react'
 import Item from '../model/Item'
 
-class AddIntervalItem extends Component {
+export default class AddIntervalItem extends Component {
 
     componentWillMount() {
-        this.setState({
-            item: new Item("", "Break", 20)            
-        })
+        this.setState({ item: new Item("", 20) })
     }
 
-    handleChangeName = (e) => {
-        const item = this.state.item
-        if (e.target.value) {
-            item.type = "Exercise"
-            item.name = e.target.value
-        } else {
-            item.type = "Break"
-            item.name = ""
-        }
+    shouldComponentUpdate(nextProps, nextState) {
+        return this.props.running !== nextProps.running
+    }
+
+    handleChangeName = (event) => {
+        const item = { ...this.state.item, name: event.target.value ? event.target.value : "" }
         this.setState({ item: item })
+        this.forceUpdate()
     }
 
-    handleChangeDuration = (e) => {
-        const item = this.state.item
-        item.duration = parseInt(e.target.value, 10)
-        item.timeleft = parseInt(e.target.value, 10)
+    handleChangeDuration = (event) => {
+        const item = { ...this.state.item }
+        item.duration = parseInt(event.target.value, 10)
+        item.timeleft = parseInt(event.target.value, 10)
         this.setState({ item: item })
+        this.forceUpdate()
     }
 
-    handleAddItem = (e, item) => {
-        this.props.addItem(item)
-        this.setState({ item: new Item("", "Break", item.duration) } )
-        e.preventDefault()
+    handleAddItem = (event) => {
+        this.props.addItem(this.state.item)
+        this.setState({ item: new Item("", this.state.item.duration) } )
+        this.forceUpdate()
+        event.preventDefault()
     }
 
     render() {
-
+        // don't show this if the training is running
+        if (this.props.running) { return null }
+        
         return (
-            <div className="AddIntervalItem">
+            <div className="AddIntervalItem w-25">
             <h2>Add Item</h2>
-                <form onSubmit={(event) => { this.handleAddItem(event, this.state.item) }}>
+                <form onSubmit={this.handleAddItem}>
 
                     <div className="card">
                         <div className="card-body">
@@ -49,7 +49,7 @@ class AddIntervalItem extends Component {
                                     <label className="input-group-text" htmlFor="exercise">New Item &nbsp; &nbsp;</label>
                                 </div>
                                 <input id="exercise" className="form-control" type="text" value={this.state.item.name} 
-                                    placeholder="empty for break!" onChange={(event) => { this.handleChangeName(event) }} />
+                                    placeholder="empty for break!" onChange={this.handleChangeName} />
                             </div>
 
                             <div className="input-group mb-3">
@@ -74,7 +74,7 @@ class AddIntervalItem extends Component {
                             </div>
                             
                             <button type="submit" className="btn btn-info is-outlined is-fullwidth">
-                                Add {this.state.item.type}
+                                Add {this.state.item.name === "" ? "Break" : "Exercise"}
                             </button>                            
                         </div>
                     </div>
@@ -83,5 +83,3 @@ class AddIntervalItem extends Component {
         );
     }
 }
-
-export default AddIntervalItem;

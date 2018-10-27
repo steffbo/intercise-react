@@ -30,3 +30,15 @@
     background-color: #ffd83d;
 }
 
+.col-order {
+    width: 10%
+}
+.col-exercise {
+    width: 60%
+}
+.col-duration {
+    width: 20%
+}
+.col-options {
+    width: 10%
+}
