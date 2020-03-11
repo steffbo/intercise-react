@@ -16,7 +16,7 @@ export default class IntervalItem extends Component {
         };
     }
 
-    componentWillReceiveProps(nextProps) {
+    UNSAFE_componentWillReceiveProps(nextProps) {
         this.setState({ timeleft: nextProps.item.timeleft })
     }
 

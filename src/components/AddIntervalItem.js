@@ -3,7 +3,7 @@ import Item from '../model/Item'
 
 export default class AddIntervalItem extends Component {
 
-    componentWillMount() {
+    UNSAFE_componentWillMount() {
         this.setState({ item: new Item("", 20) })
     }
 
