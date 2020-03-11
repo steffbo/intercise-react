@@ -8,6 +8,7 @@ export default class IntervalItem extends Component {
         super();
 
         this.state = {
+            item: props.item,
             name: props.item.name,
             timeleft: props.item.timeleft,
             duration: props.item.duration,
@@ -48,7 +49,7 @@ export default class IntervalItem extends Component {
         if (this.state.isEditable) {
             return (<input type="number" value={this.state.timeleft} min="0" onChange={this.handleChangeTimeleft} onKeyDown={this.handleKeyDown} />)
         } else {
-            return ("Time left: " + this.state.timeleft.toString())
+            return ("Time left: " + this.state.timeleft)
         }
     }
 
@@ -100,24 +101,20 @@ export default class IntervalItem extends Component {
 
         return (
             <tr className={status}>
-                <td>
-                    { !this.props.running && <div>
-                        <i className="material-icons" onClick={this.props.upItem}>expand_less</i>
-                        <i className="material-icons" onClick={this.props.downItem}>expand_more</i>
-                    </div> }
-                </td>
+                { !this.props.running && <td>                    
+                    <i className="material-icons" onClick={this.props.upItem}>expand_less</i>
+                    <i className="material-icons" onClick={this.props.downItem}>expand_more</i>                     
+                </td>}
                 <td>
                     {this.getName()}
                 </td>
                 <td>
                     {this.getDuration()}
                 </td>
-                <td>
-                    { !this.props.running && <div>
-                        <i className="material-icons" onClick={this.editItem}>{editIcon}</i>
-                        <i className="material-icons" onClick={this.props.deleteItem}>delete</i>
-                    </div> }
-                </td>
+                { !this.props.running &&<td>
+                    <i className="material-icons" onClick={this.editItem}>{editIcon}</i>
+                    <i className="material-icons" onClick={this.props.deleteItem}>delete</i>
+                </td>}
             </tr>
         );
     }

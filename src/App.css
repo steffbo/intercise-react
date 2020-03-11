@@ -14,7 +14,7 @@
 
 .is-active {
     background-color: #209cee;
-    font-size: 24px;
+    font-size: 36px;
     color: aliceblue !important;
 }
 
@@ -23,7 +23,7 @@
 }
 
 .is-next {
-    font-size: 24px;
+    font-size: 36px;
 }
 
 .is-upcoming {

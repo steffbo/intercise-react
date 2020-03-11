@@ -33,16 +33,13 @@ export default class Interval extends Component {
 
   handleAddItem = (item) => {
     const newItems = [ ...this.state.items, item ]
-    this.setState({
-      items: newItems
-    })
+    this.setState({ items: newItems })
   }
 
-  handleDeleteItem = (event, item) => {
-    const newItems = [ this.state.items.filter(entry => entry !== item)]
-    this.setState({
-      items: newItems
-    })
+  handleDeleteItem = (item) => {
+    const items = this.state.items.slice();
+    const filtered = items.filter(e => e !== item)
+    this.setState({ items: filtered })
   }
 
   handleUpItem = (e, item) => {
@@ -80,7 +77,7 @@ export default class Interval extends Component {
   handleStart = () => {
     this.setState({
       running: true,
-      timerId: setInterval(this.tick.bind(this), 100)
+      timerId: setInterval(this.tick.bind(this), 1000)
     })
   }
 
@@ -202,7 +199,7 @@ export default class Interval extends Component {
       <IntervalItem
         key={item.id}
         item={item}
-        deleteItem={(event) => { this.handleDeleteItem(event, item) }}
+        deleteItem={() => { this.handleDeleteItem(item) }}
         upItem={(event) => { this.handleUpItem(event, item) }}
         downItem={(event) => { this.handleDownItem(event, item) }}
         changeItem={(newItem) => { this.handleChangeItem(newItem) }}
@@ -212,15 +209,24 @@ export default class Interval extends Component {
 
     return (
       <div className="wrapper">
-        <h1>Intercise</h1>
+        {!this.state.running && <h1>Intercise</h1>}
        
+        {this.state.running && 
+        <div>Total duration: {this.getTotalDurationString()} Min
+          <div className="progress">          
+            <div className="progress-bar" role="progressbar" style={{ width: this.state.progress + '%' }} 
+              aria-valuenow={this.state.progress} aria-valuemin="0" aria-valuemax="100">
+            </div>
+          </div>
+        </div>}
+
         <table className="table">
           <thead>
               <tr>
-              <th className="col-order" scope="col">Order</th>
+              {!this.state.running && <th className="col-order" scope="col">Order</th>}
               <th className="col-exercise" scope="col">Exercise</th>
               <th className="col-duration" scope="col">Duration</th>
-              <th className="col-options" scope="col">Options</th>
+              {!this.state.running && <th className="col-options" scope="col">Options</th>}
               </tr>
           </thead>
           <tbody>            
@@ -240,13 +246,11 @@ export default class Interval extends Component {
           setBreakLength={this.setBreakLength}
         />
 
-        <br/>
-        Total duration: {this.getTotalDurationString()} Min
-        <div className="progress">
-          
-          <div className="progress-bar" role="progressbar" style={{ width: this.state.progress + '%' }} 
-            aria-valuenow={this.state.progress} aria-valuemin="0" aria-valuemax="100"></div>
-          </div>
+        {/*<div className="slidecontainer">
+          <input type="range" min="1" max="100" defaultValue="50" className="slider" id="myRange"/>
+        </div>*/}
+
+        Runtime: {this.state.runtime}
 
         <AddIntervalItem 
           running={this.state.running} 
